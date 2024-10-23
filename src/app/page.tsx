@@ -1,101 +1,174 @@
-import Image from "next/image";
+"use client";
+import { useGetListFilterType, useGetListPokemon } from '@/components/hooks/herohooks';
+import React, { useEffect, useState } from 'react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import Link from "next/link";
+import styled from '@emotion/styled';
+import ListCard from "@/components/pages/list-card";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+interface PokemonResult {
+    name    : string;
+    url     : string; 
+    id      : number;
 }
+
+interface PokemonData {
+    results : PokemonResult[];
+    count   : number;
+}
+
+const Home = () => {
+    const [offset, setOffset]   = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const [sorting, setSorting] = useState('lowest');
+    const [filterType, setFilterType] = useState('all');
+
+    const [listPokemonData, setListPokemonData] = useState<PokemonData>({
+        results : [],
+        count   : 0,
+    });
+    const limit = 40; 
+
+    const { data, isLoading, isError } = useGetListPokemon(offset, limit);
+    const { data: listFilterType, isLoading: isLoadingFilter, isError: isErrorFilter } = useGetListFilterType(limit);
+
+    useEffect(() => {
+        if (data && data.results) {
+            const ids = data.results.map((pokemon: { url: string; }) => {
+                const segments = pokemon.url.split('/');
+                return segments[segments.length - 2]; 
+            });
+            
+            const resultsWithIds = data.results.map((pokemon: any, index: string | number) => ({
+                ...pokemon, 
+                id: Number(ids[index]), 
+            }));
+
+            setListPokemonData(prevData => ({
+                results: [...prevData.results, ...resultsWithIds],
+                count: data.count,
+            }));
+
+            if (data.results.length < limit) {
+                setHasMore(false);
+            }
+        }
+    }, [data]);
+
+    useEffect(() => {
+        if (sorting == 'asc' || sorting == 'dsc'){
+            const sortedResults = [...listPokemonData.results].sort((a, b) => {
+                return sorting == 'dsc'
+                    ? b.name.localeCompare(a.name, undefined, { sensitivity: 'base' })
+                    : a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+            });
+
+            setListPokemonData(prevData => ({
+                ...prevData,
+                results: sortedResults,
+            }));
+        } else if (sorting == 'lowest' || sorting == 'highest'){
+            setListPokemonData(prevData => {
+                const sortedResults = [...prevData.results].sort((a, b) => {
+                    return sorting === 'lowest' ? a.id - b.id : b.id - a.id;
+                });
+                return {
+                    ...prevData,
+                    results: sortedResults,
+                };
+            });
+        }
+    }, [sorting]);
+
+    useEffect(() => {
+
+    }, [filterType])
+
+    const fetchData = () => {
+        if (hasMore) {
+            setOffset(prevOffset => prevOffset + limit); 
+        }
+    };
+
+    if (isLoading) return <h4>Loading...</h4>;
+    if (isError) return <h4>Error loading Pokémon data</h4>;
+
+    return (
+        <StyledContainer className="font-[family-name:var(--font-geist-sans)]">
+            <StyledHeroTitle className="text-center">
+                <Link href="/#" className="font-bold md:text-6xl text-lg">Pokédex</Link>
+            </StyledHeroTitle>
+            <div className='grid grid-cols-2'>
+                <div className='flex gap-2 items-center flex-col md:flex-row'>
+                    <b className='text-sm md:text-xl'>Type</b>
+                    <StyledSelect
+                        value={filterType}
+                        onChange={e => setFilterType(e.target.value)}
+                    >
+                        <option value="" className='capitalize'>all</option>
+
+                        {listFilterType?.results?.map((res: any, idx: number) => (
+                            <option key={idx} value={res?.name} className='capitalize'>{res?.name}</option>
+                        ))}
+                    </StyledSelect>
+                </div>
+                <div className='justify-end flex gap-2 items-center flex-col md:flex-row'>
+                    <b className='text-sm md:text-xl'>Sorting</b>
+                    <StyledSelect
+                        value={sorting}
+                        onChange={e => setSorting(e.target.value)}
+                    >
+                        <option value="lowest">Lowest Number</option>
+                        <option value="highest">Highest Number</option>
+                        <option value="asc">A-Z</option>
+                        <option value="dsc">Z-A</option>
+                    </StyledSelect>
+                </div>
+           </div>
+            <InfiniteScroll
+                dataLength={listPokemonData.results.length} 
+                next={fetchData} 
+                hasMore={hasMore}
+                loader={<h4>Loading more Pokémon...</h4>}
+                endMessage={<p>No more Pokémon to display.</p>}
+            >
+            <ListCard
+                DATA={listPokemonData.results}
+                loading={isLoading}
+            />
+            </InfiniteScroll>
+        </StyledContainer>
+    );
+};
+
+export default Home;
+
+const StyledContainer = styled.div`
+    display: grid;
+    min-height: 100vh;
+    gap: 36px;
+    padding: 40px 226px;
+
+    @media (max-width: 768px) {
+        font-size: 3rem; 
+        padding: 20px 22px;
+    }
+`
+
+const StyledHeroTitle = styled.div`
+`;
+
+const StyledSelect = styled.select`
+    width: 40%;
+    border-radius: 6px;
+    color: #000;
+    padding: 6px;
+    font-size: 14px;
+    text-transform: capitalize;
+
+    @media (max-width: 768px) {
+        width: 132px;
+        font-size: 12px;        
+    }
+`; 
