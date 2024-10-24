@@ -2,7 +2,10 @@
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  images: {
+    domains: ['raw.githubusercontent.com'],
   }
-}
+};
 
-export default nextConfig
+export default nextConfig;
