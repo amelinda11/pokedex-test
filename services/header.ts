@@ -24,3 +24,27 @@ export const getListFilterType = (limit: number) => {
 
     return axios.get(url, options).then(response => response.data);
 };
+
+export const getDetailPokemon = (selected: string) => {
+    const options: AxiosRequestConfig = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    const url = `${endpoint.listPokemon}/${selected}`;
+
+    return axios.get(url, options).then(response => response.data);
+};
+
+export const getFilterType = (selected: string) => {
+    const options: AxiosRequestConfig = {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    };
+
+    const url = `${endpoint.listFilterType}/${selected}`;
+
+    return axios.get(url, options).then(response => response.data);
+};

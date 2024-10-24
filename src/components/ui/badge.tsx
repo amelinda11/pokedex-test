@@ -9,7 +9,7 @@ const BadgeTypes: React.FC<BadgeProps> = ({ data }) => {
 
     return (
         <div className="flex gap-2 justify-center capitalize">
-            {data.map((res: any, idx: Key | null | undefined) => (
+            {data?.map((res: any, idx: Key | null | undefined) => (
                 <StyledBadge key={idx} color={res.type.name}>{res.type.name}</StyledBadge>
             ))}
         </div>

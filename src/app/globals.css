@@ -20,3 +20,8 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   height: 100%;
 }
+
+.chakra-drawer__content {
+  background: rgb(15, 12, 41);
+    background: radial-gradient(circle, rgba(15, 12, 41, 1) 25%, rgba(36, 36, 62, 1) 52%, rgba(48, 43, 99, 1) 100%);
+}
