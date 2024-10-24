@@ -10,7 +10,8 @@ const SkeletonApp: React.FC = () => {
         <div className='grid gap-2 grid-cols-2 md:grid-cols-4'>
             {Array.from({ length: 22 }).map((_, index) => (
                 <StyledCardContainer key={index}>
-                    <SkeletonCircle size="20"></SkeletonCircle>
+                    <SkeletonCircle 
+                    size="20"></SkeletonCircle>
                     <SkeletonText noOfLines={2}/>
                 </StyledCardContainer>
             ))}
