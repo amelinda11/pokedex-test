@@ -1,15 +1,16 @@
 import { Key } from "react";
 import styled from '@emotion/styled';
+import { TypeProps } from "../pages/main-card";
 
 interface BadgeProps {
-    data: any;
+    data: TypeProps[];
 }
 
 const BadgeTypes: React.FC<BadgeProps> = ({ data }) => {
 
     return (
         <div className="flex gap-2 justify-center capitalize">
-            {data?.map((res: any, idx: Key | null | undefined) => (
+            {data?.map((res: TypeProps, idx: Key | null | undefined) => (
                 <StyledBadge key={idx} color={res.type.name}>{res.type.name}</StyledBadge>
             ))}
         </div>

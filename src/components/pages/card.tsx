@@ -14,7 +14,7 @@ import DetailCard from './detail-card';
 interface CardProps {
     name: string;
     imageUrl: string;
-    position: any;
+    position: string;
     height: string;
 }
 

@@ -13,8 +13,13 @@ interface PokemonResult {
     id: number;
 }
 
+interface PokemonChild {
+    name : string;
+    url: string;
+}
+
 interface PokemonItem {
-    pokemon: any;
+    pokemon: PokemonChild;
     slot: number;
 }
 

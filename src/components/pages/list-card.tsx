@@ -2,10 +2,14 @@ import React, { FC } from 'react';
 import Card from './card';
 
 
+interface ListCardDataProps {
+    id: number;
+    name: string;
+    url: string;
+}
 interface ListCardProps {
-    DATA: any[];
+    DATA: ListCardDataProps[];
     loading: boolean;
-    [x: string]: any;
 }
 
 const ListCard: FC<ListCardProps> = (props) => {

@@ -12,6 +12,22 @@ interface DetailCardProps {
     name: string;
 }
 
+interface AbilityChildProps {
+    name: string;
+    url: string;
+}
+interface AbilitiesProps {
+    ability: AbilityChildProps;
+    is_hidden: boolean;
+    slot: number;
+}
+
+interface StatisticProps {
+    base_stat: number;
+    effort: number;
+    stat: AbilityChildProps;
+}
+
 const DetailCard: React.FC<DetailCardProps> = (props) => {
     const { name } = props;
     const { data } = useGetDetail(name);
@@ -66,7 +82,7 @@ const DetailCard: React.FC<DetailCardProps> = (props) => {
                         Abalities
                     </div>
                     <div className="w-2/4">
-                        {data?.abilities?.map((res: any, idx: number) => (
+                        {data?.abilities?.map((res: AbilitiesProps, idx: number) => (
                             <span key={idx} className="capitalize"> {res?.ability?.name},</span>
                         ))}
                     </div>
@@ -80,7 +96,7 @@ const DetailCard: React.FC<DetailCardProps> = (props) => {
                     </div>
                 </div>
 
-                {data?.stats?.map((res: any, idx: number) => (
+                {data?.stats?.map((res: StatisticProps, idx: number) => (
                     <div key={idx} className="flex text-base gap-2 my-1.5 w-full">
                         <div className="w-2/4 font-semibold">
                             {res?.stat?.name}

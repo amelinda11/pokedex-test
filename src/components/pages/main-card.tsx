@@ -8,7 +8,7 @@ import BadgeTypes from '../ui/badge';
 interface CardProps {
     name: string;
     imageUrl: string;
-    position: number;
+    position: string;
     height: string;
 }
 
@@ -16,9 +16,19 @@ interface StyledCardContainerProps {
     type: string;
 }
 
+interface TypeChildProps {
+    name: string;
+    url: string;
+}
+
+export interface TypeProps {
+    slot: number;
+    type: TypeChildProps;
+}
+
 const MainCard: React.FC<CardProps> = ({ name, imageUrl, position }) => {
     const [color, setColor] = useState<string>('gray');
-    const [types, setTypes] = useState<any[]>([]);
+    const [types, setTypes] = useState<TypeProps[]>([]);
 
     useEffect(() => {
         const fetchColorData = async () => {
@@ -32,7 +42,7 @@ const MainCard: React.FC<CardProps> = ({ name, imageUrl, position }) => {
                 setColor(data.types[0]?.type.name || 'default');
                 setTypes(data.types);
             } catch (error) {
-                console.error(error);
+                console.error(error); 
                 setColor('default');
             }
         };
