@@ -17,7 +17,7 @@ const DetailCard: React.FC<DetailCardProps> = (props) => {
     const { data } = useGetDetail(name);
     const urlLink = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
     const convertNumber = (num: number) => {
-        return num?.toString().padStart(3, '0');
+        return num?.toString().padStart(4, '0');
     };
 
     return (
@@ -70,8 +70,27 @@ const DetailCard: React.FC<DetailCardProps> = (props) => {
                             <span key={idx} className="capitalize"> {res?.ability?.name},</span>
                         ))}
                     </div>
-                </div>
-            </DrawerBody>
+                </div>     
+
+
+                <div className="flex text-base gap-2 my-3 w-full">
+                    <div className="w-full font-semibold">
+                        Statistic
+                        <hr/>
+                    </div>
+                </div>  
+
+                {data?.stats?.map((res: any, idx: number) => (
+                    <div key={idx} className="flex text-base gap-2 my-1.5 w-full">
+                        <div className="w-2/4 font-semibold">
+                            {res?.stat?.name}
+                        </div>
+                        <div className="w-2/4">
+                            {res?.base_stat}
+                        </div>
+                    </div>  
+                ))}
+                </DrawerBody>
         </>
     );
 };

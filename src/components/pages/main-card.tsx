@@ -32,7 +32,6 @@ const MainCard: React.FC<CardProps> = ({ name, imageUrl, position }) => {
                 setColor(data.types[0]?.type.name || 'default');
                 setTypes(data.types);
             } catch (error) {
-                console.error(error);
                 setColor('default');
             }
         };
