@@ -9,7 +9,7 @@ import Image from "next/image";
 import BadgeTypes from "../ui/badge";
 
 interface DetailCardProps {
-    name    : string;
+    name: string;
 }
 
 const DetailCard: React.FC<DetailCardProps> = (props) => {
@@ -17,21 +17,21 @@ const DetailCard: React.FC<DetailCardProps> = (props) => {
     const { data } = useGetDetail(name);
     const urlLink = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/';
     const convertNumber = (num: number) => {
-        return num?.toString().padStart(3, '0');
+        return num?.toString().padStart(4, '0');
     };
 
     return (
         <>
             <DrawerBody className="pt-14">
                 <div className="w-full flex justify-center">
-                        <Image
-                            src={`${urlLink + data?.id}.png`}
-                            width={150}
-                            height={150}
-                            alt={`Picture of ${name}`}
-                            priority
-                            style={{ objectFit: 'contain' }}
-                        />
+                    <Image
+                        src={`${urlLink + (data?.id || 1)}.png`}
+                        width={150}
+                        height={150}
+                        alt={`Picture of ${name}`}
+                        priority
+                        style={{ objectFit: 'contain' }}
+                    />
                 </div>
                 <DrawerTitle className="text-2xl font-bold capitalize text-center">{name} - #{convertNumber(data?.id)}</DrawerTitle>
                 <div className="flex items-center text-base gap-2 my-3 w-full">
@@ -71,12 +71,30 @@ const DetailCard: React.FC<DetailCardProps> = (props) => {
                         ))}
                     </div>
                 </div>
+
+
+                <div className="flex text-base gap-2 my-3 w-full">
+                    <div className="w-full font-semibold">
+                        Statistic
+                        <hr />
+                    </div>
+                </div>
+
+                {data?.stats?.map((res: any, idx: number) => (
+                    <div key={idx} className="flex text-base gap-2 my-1.5 w-full">
+                        <div className="w-2/4 font-semibold">
+                            {res?.stat?.name}
+                        </div>
+                        <div className="w-2/4">
+                            {res?.base_stat}
+                        </div>
+                    </div>
+                ))}
             </DrawerBody>
         </>
     );
 };
 
 export default DetailCard;
-
 
 
