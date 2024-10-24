@@ -5,7 +5,6 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import Link from "next/link";
 import styled from '@emotion/styled';
 import ListCard from "@/components/pages/list-card";
-import SkeletonApp from '@/components/ui/skeleton-app';
 
 interface PokemonResult {
     name: string;
@@ -43,7 +42,7 @@ const Home = () => {
 
     const { data, isLoading, isError } = useGetListPokemon(offset, limit, rehit);
     const { data: listFilterType } = useGetListFilterType(limit);
-    const { data: dataFilterType, isLoading: isLoadingFilter } = useGetFilterType(filterType);
+    const { data: dataFilterType } = useGetFilterType(filterType);
 
     useEffect(() => {
         if (!data || !data.results) return;
@@ -117,13 +116,14 @@ const Home = () => {
         return sortedResults;
     };
 
+    if (isLoading) return <h4>Loading...</h4>;
     if (isError) return <h4>Error loading Pokémon data</h4>;
 
     return (
         <StyledContainer>
-            <div className='text-center'>
+            <StyledHeroTitle>
                 <Link href="/#" className="font-bold md:text-6xl text-lg">Pokédex</Link>
-            </div>
+            </StyledHeroTitle>
             <div className='grid grid-cols-2'>
                 <div className='flex gap-2 items-center flex-col md:flex-row'>
                     <b className='text-sm md:text-xl'>Type</b>
@@ -149,18 +149,15 @@ const Home = () => {
                     </StyledSelect>
                 </div>
             </div>
-            {isLoading || isLoadingFilter ? <SkeletonApp /> : 
-                <InfiniteScroll
-                    dataLength={listPokemonData.results.length}
-                    next={fetchData}
-                    hasMore={hasMore}
-                    loader={<h4>Loading more Pokémon...</h4>}
-                    endMessage={<p>No more Pokémon to display.</p>}
-                >
-                    <ListCard DATA={listPokemonData.results} loading={isLoading} />
-                </InfiniteScroll>
-            }
-            
+            <InfiniteScroll
+                dataLength={listPokemonData.results.length}
+                next={fetchData}
+                hasMore={hasMore}
+                loader={<h4>Loading more Pokémon...</h4>}
+                endMessage={<p>No more Pokémon to display.</p>}
+            >
+                <ListCard DATA={listPokemonData.results} loading={isLoading} />
+            </InfiniteScroll>
         </StyledContainer>
     );
 };
@@ -177,6 +174,8 @@ const StyledContainer = styled.div`
         padding: 20px 22px;
     }
 `;
+
+const StyledHeroTitle = styled.div``;
 
 const StyledSelect = styled.select`
     width: 40%;
